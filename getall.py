@@ -5,7 +5,7 @@ SLEEPTIME = 300
 #TARGETDIR = '/root/royal'
 TARGETDIR = '/Users/Ali/royal'
 RANGEBEGIN = 1
-RANGEEND = 150
+RANGEEND = 569
 COMMAND = 'dezoomify-node.js'
 #CWD = '/root/dezoomify/node-app/'
 CWD = '/Users/Ali/workspace/dezoomify/master/node-app/'
@@ -25,10 +25,8 @@ def trydownload(filename):
 
 
 def updatedownloaded(d,c):
-   #if random.randint(1,5) <= 3:
    if c in os.listdir(TARGETDIR):
       d.append(c)
-      print('{} downloaded successfully'.format(c))
    return
 
 missingfiles = []
@@ -46,11 +44,13 @@ print(missingfiles)
 while len(missingfiles) > 0:
    candidate = random.sample(missingfiles,1)[0]
    trydownload(candidate)
+   updatedownloaded(downloaded,candidate)
+   if candidate in downloaded:
+       missingfiles.remove(candidate)
+       print('{} downloaded successfully'.format(candidate))
    print('Sleeping ...')
    for i in range(SLEEPTIME//5):
        print('.',end='',flush=True)
        time.sleep(5)
-   updatedownloaded(downloaded,candidate)
-   if candidate in downloaded:
-       missingfiles.remove(candidate)
+   print(' ')
 
