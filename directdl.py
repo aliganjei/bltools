@@ -9,6 +9,9 @@ RANGEEND = 569
 BASEURL = 'http://www.bl.uk/manuscripts/Proxy.ashx?view='
 MANUSCRIPTID = 'io_islamic_3540'
 
+def getfileinfo(filename):
+    return (4578,6867,256)
+
 def trydownload(filename):
    (width,height,tilesize) = getfileinfo(filename)
    rows = (width // tilesize) + 1
@@ -16,7 +19,8 @@ def trydownload(filename):
    zoomlevel = 13
    tileurl = BASEURL + MANUSCRIPTID + '_' + filename.split('.')[0] + '_files/' + str(zoomlevel) + '/{}_{}.jpg'
    #"io_islamic_3540_f324r_files/13/17_26.jpg"
-   print(tileurl)
+   alltilesurls = [tileurl.format(x,y) for x in range(rows) for y in range(cols)]
+   print("\n".join(alltilesurls))
 
 def updatedownloaded(d,c):
    if c in os.listdir(TARGETDIR):
