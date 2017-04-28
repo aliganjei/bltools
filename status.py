@@ -4,7 +4,7 @@ SLEEPTIME = 300
 #TARGETDIR = '/root/royal'
 TARGETDIR = '/Users/Ali/royal'
 RANGEBEGIN = 1
-RANGEEND = 150
+RANGEEND = 569
 COMMAND = 'dezoomify-node.js'
 #CWD = '/root/dezoomify/node-app/'
 CWD = '/Users/Ali/workspace/dezoomify/master/node-app/'
@@ -42,7 +42,7 @@ missingfiles = list(set(allfiles).difference(set(downloaded)))
 
 print ('Total of {:d} files left in range {:d} to {:d}'.format(len(missingfiles),RANGEBEGIN, RANGEEND))
 
-print (' '.join(sorted(missingfiles)))
+#print (' '.join(sorted(missingfiles)))
 exit()
 while missingfiles:
    candidate = random.sample(missingfiles,1)[0]
