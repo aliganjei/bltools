@@ -2,37 +2,44 @@
 import os,random,sys,time,subprocess,requests
 from PIL import Image
 from io import BytesIO
+import xmltodict
 
 SLEEPTIME = 300
 #TARGETDIR = '/root/royal'
-TARGETDIR = '/tmp'
-#TARGETDIR = '/Users/Ali/royal'
+TARGETDIR = '/Users/Ali/royal'
 RANGEBEGIN = 1
 RANGEEND = 569
 BASEURL = 'http://www.bl.uk/manuscripts/Proxy.ashx?view='
 MANUSCRIPTID = 'io_islamic_3540'
 
 def getfileinfo(filename):
-    return (4578,6867,257)
+   infourl = BASEURL + MANUSCRIPTID + '_' + filename.split('.')[0] + '.xml'
+   response = s.get(infourl)
+   infodict = xmltodict.parse(BytesIO(response.content))
+   w = int(infodict['Image']['Size']['@Width'])
+   h = int(infodict['Image']['Size']['@Height'])
+   t = int(infodict['Image']['@TileSize'])
+   print (w,h,t)
+   return (w,h,t)
 
 def trydownload(filename):
+   print('Downloading ',filename)
    (width,height,tilesize) = getfileinfo(filename)
    rows = (width // tilesize) + 1
    cols = (height // tilesize) + 1
    zoomlevel = 13
    tileurl = BASEURL + MANUSCRIPTID + '_' + filename.split('.')[0] + '_files/' + str(zoomlevel) + '/{}_{}.jpg'
-   #"io_islamic_3540_f324r_files/13/17_26.jpg"
    alltilesurls = [tileurl.format(x,y) for x in range(rows) for y in range(cols)]
    x = 0
    y = 0
    page = Image.new("RGB",(width,height))
-   s = requests.Session()
    tiles = []
    for f in alltilesurls:
       response = s.get(f)
       tile = Image.open(BytesIO(response.content))
       tiles.append(tile)
-      print(f)
+      print('.',end='',flush=True)
+   print('')
 
    for t in tiles:
       box = (x*tilesize, y*tilesize)
@@ -57,6 +64,7 @@ allfiles = rs + vs
 downloaded = os.listdir(TARGETDIR)
 
 missingfiles = list(set(allfiles).difference(set(downloaded)))
+s = requests.Session()
 
 while len(missingfiles) > 0:
    candidate = random.sample(missingfiles,1)[0]
