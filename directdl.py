@@ -4,20 +4,22 @@ from PIL import Image
 from io import BytesIO
 import xmltodict
 
-SLEEPTIME = 300
+SLEEPTIME = 0
 #TARGETDIR = '/root/royal'
-TARGETDIR = '/Users/Ali/royal'
+BASEDIR = '/Users/Ali/BL'
 RANGEBEGIN = 1
-RANGEEND = 569
+RANGEEND = 500
 BASEURL = 'http://www.bl.uk/manuscripts/Proxy.ashx?view='
-MANUSCRIPTID = 'io_islamic_3540'
+MANUSCRIPTID = 'add_ms_18188'
+TARGETDIR = BASEDIR + '/' + MANUSCRIPTID
+#MANUSCRIPTID = 'io_islamic_3540'
 
 def getfileinfo(filename):
    infourl = BASEURL + MANUSCRIPTID + '_' + filename.split('.')[0] + '.xml'
    response = s.get(infourl)
    infodict = xmltodict.parse(BytesIO(response.content))
-   w = int(infodict['Image']['Size']['@Width'])
-   h = int(infodict['Image']['Size']['@Height'])
+   w = int(infodict['Image']['Size']['@Width']) -1
+   h = int(infodict['Image']['Size']['@Height']) -1
    t = int(infodict['Image']['@TileSize'])
    print (w,h,t)
    return (w,h,t)
@@ -34,12 +36,22 @@ def trydownload(filename):
    y = 0
    page = Image.new("RGB",(width,height))
    tiles = []
+   fuckedup = False
+   partial = ''
    for f in alltilesurls:
       response = s.get(f)
-      tile = Image.open(BytesIO(response.content))
+      try:
+         tile = Image.open(BytesIO(response.content))
+      except:
+         tile = Image.new("RGB",(tilesize,tilesize))
+         fuckedup = True
+         print('*',end='',flush=True)
       tiles.append(tile)
       print('.',end='',flush=True)
    print('')
+   if fuckedup:
+       print('****** Some tiles didnt load properly  *****')
+       partial = 'partial-'
 
    for t in tiles:
       box = (x*tilesize, y*tilesize)
@@ -48,7 +60,7 @@ def trydownload(filename):
           y = 0
           x += 1
       page.paste(t,box)
-   page.save(TARGETDIR+'/{}'.format(filename))
+   page.save(TARGETDIR+'/{}{}'.format(partial,filename))
 
 def updatedownloaded(d,c):
    if c in os.listdir(TARGETDIR):
@@ -57,17 +69,19 @@ def updatedownloaded(d,c):
 
 missingfiles = []
 
-rs = ['f{:03d}r.jpg'.format(x) for x in range(RANGEBEGIN,RANGEEND)]
-vs = ['f{:03d}v.jpg'.format(x) for x in range(RANGEBEGIN,RANGEEND)]
+rs = ['f{:03d}r.jpg'.format(x) for x in range(RANGEBEGIN,RANGEEND+1)]
+vs = ['f{:03d}v.jpg'.format(x) for x in range(RANGEBEGIN,RANGEEND+1)]
 
 allfiles = rs + vs
 downloaded = os.listdir(TARGETDIR)
 
 missingfiles = list(set(allfiles).difference(set(downloaded)))
+missingfiles.sort()
 s = requests.Session()
 
 while len(missingfiles) > 0:
-   candidate = random.sample(missingfiles,1)[0]
+   #candidate = random.sample(missingfiles,1)[0]
+   candidate = missingfiles[0]
    trydownload(candidate)
    updatedownloaded(downloaded,candidate)
    if candidate in downloaded:

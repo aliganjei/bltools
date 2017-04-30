@@ -42,7 +42,7 @@ missingfiles = list(set(allfiles).difference(set(downloaded)))
 
 print ('Total of {:d} files left in range {:d} to {:d}'.format(len(missingfiles),RANGEBEGIN, RANGEEND))
 
-#print (' '.join(sorted(missingfiles)))
+print (' '.join(sorted(missingfiles)))
 exit()
 while missingfiles:
    candidate = random.sample(missingfiles,1)[0]
