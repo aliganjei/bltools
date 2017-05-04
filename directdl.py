@@ -1,5 +1,5 @@
 #!/usr/bin/env python3.6
-import os,random,sys,time,subprocess,requests
+import os,random,sys,time,requests
 from PIL import Image
 from io import BytesIO
 import xmltodict
@@ -8,9 +8,9 @@ SLEEPTIME = 0
 #TARGETDIR = '/root/royal'
 BASEDIR = '/Users/Ali/BL'
 RANGEBEGIN = 1
-RANGEEND = 500
+RANGEEND = 259
 BASEURL = 'http://www.bl.uk/manuscripts/Proxy.ashx?view='
-MANUSCRIPTID = 'add_ms_18188'
+MANUSCRIPTID = 'grenville_xli'
 TARGETDIR = BASEDIR + '/' + MANUSCRIPTID
 #MANUSCRIPTID = 'io_islamic_3540'
 
