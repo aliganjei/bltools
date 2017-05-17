@@ -14,7 +14,7 @@ To run the script you'd need python3.x and following libraries:
 
 Normally installing them is as easy as running:
 ```
-pip install module\_name
+pip install module_name
 ```
 
 # Download a manuscript

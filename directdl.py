@@ -1,4 +1,3 @@
-#!/usr/bin/env python3.6
 import os,random,sys,time,requests
 from PIL import Image
 from io import BytesIO
