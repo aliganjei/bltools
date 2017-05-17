@@ -3,16 +3,11 @@ import os,random,sys,time,requests
 from PIL import Image
 from io import BytesIO
 import xmltodict
+import yaml
 
-SLEEPTIME = 0
-#TARGETDIR = '/root/royal'
-BASEDIR = '/Users/Ali/BL'
-RANGEBEGIN = 1
-RANGEEND = 259
-BASEURL = 'http://www.bl.uk/manuscripts/Proxy.ashx?view='
-MANUSCRIPTID = 'grenville_xli'
-TARGETDIR = BASEDIR + '/' + MANUSCRIPTID
-#MANUSCRIPTID = 'io_islamic_3540'
+def readconfig():
+    return yaml.safe_load(open("bl.conf"))
+
 
 def getfileinfo(filename):
    infourl = BASEURL + MANUSCRIPTID + '_' + filename.split('.')[0] + '.xml'
@@ -66,6 +61,15 @@ def updatedownloaded(d,c):
    if c in os.listdir(TARGETDIR):
       d.append(c)
    return
+
+config = readconfig()
+BASEDIR = config["basedir"]
+SLEEPTIME = config["sleeptime"]
+RANGEBEGIN = config["rangebegin"]
+RANGEEND = config["rangeend"]
+BASEURL = config["baseurl"]
+MANUSCRIPTID = sys.argv[1]
+TARGETDIR = BASEDIR + '/' + MANUSCRIPTID
 
 missingfiles = []
 
