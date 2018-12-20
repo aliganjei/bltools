@@ -25,36 +25,24 @@ def trydownload(filename):
    cols = (height // tilesize) + 1
    zoomlevel = 13
    tileurl = BASEURL + MANUSCRIPTID + '_' + filename.split('.')[0] + '_files/' + str(zoomlevel) + '/{}_{}.jpg'
-   alltilesurls = [tileurl.format(x,y) for x in range(rows) for y in range(cols)]
-   x = 0
-   y = 0
+   alltilesurls = [(tileurl.format(x,y),x,y) for x in range(rows) for y in range(cols)]
+
    page = Image.new("RGB",(width,height))
-   tiles = []
-   fuckedup = False
-   partial = ''
-   for f in alltilesurls:
+
+   while alltilesurls:
+      (f, r, c) = alltilesurls.pop(0)
       response = s.get(f)
       try:
          tile = Image.open(BytesIO(response.content))
+         box = (r*tilesize, c*tilesize)
+         page.paste(tile,box)
+         print('.',end='',flush=True)
       except:
-         tile = Image.new("RGB",(tilesize,tilesize))
-         fuckedup = True
+         alltilesurls.append((f,r,c))
          print('*',end='',flush=True)
-      tiles.append(tile)
-      print('.',end='',flush=True)
    print('')
-   if fuckedup:
-       print('****** Some tiles didnt load properly  *****')
-       partial = 'partial-'
 
-   for t in tiles:
-      box = (x*tilesize, y*tilesize)
-      y += 1
-      if y == cols:
-          y = 0
-          x += 1
-      page.paste(t,box)
-   page.save(TARGETDIR+'/{}{}'.format(partial,filename))
+   page.save(TARGETDIR+'/{}'.format(filename))
 
 def updatedownloaded(d,c):
    if c in os.listdir(TARGETDIR):
