@@ -69,6 +69,9 @@ downloaded = os.listdir(TARGETDIR)
 missingfiles = list(set(allfiles).difference(set(downloaded)))
 missingfiles.sort()
 s = requests.Session()
+s.headers = {
+   'User-Agent': 'Mozilla/5.0'
+}
 
 while len(missingfiles) > 0:
    #candidate = random.sample(missingfiles,1)[0]
